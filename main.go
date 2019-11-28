@@ -14,9 +14,9 @@ import (
 	"time"
 )
 
-func getMongoClient() (*mongo.Database, error) {
+func getMongoClient(conn string) (*mongo.Database, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(conn))
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -29,7 +29,13 @@ func getMongoClient() (*mongo.Database, error) {
 func main() {
 	fmt.Println("Tachartas")
 
-	db, err := getMongoClient()
+	conn := os.Getenv("DB_CONN_STRING")
+
+	if conn == "" {
+		conn = "mongodb://localhost:27017"
+	}
+
+	db, err := getMongoClient(conn)
 	if err != nil {
 		panic(err)
 	}
@@ -47,7 +53,13 @@ func main() {
 	router.HandleFunc("/event", e.Insert).Methods("POST")
 	router.HandleFunc("/event/{id}", e.Update).Methods("PUT")
 
-	listen := fmt.Sprintf(":%d", 9000)
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "9000"
+	}
+
+	listen := fmt.Sprintf(":%s", port)
 
 	http.ListenAndServe(listen, gorillah.CombinedLoggingHandler(os.Stdout, router))
 }
