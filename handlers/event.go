@@ -137,6 +137,7 @@ func (e *EventHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	event.ID = id
 	err = e.eventRepo.Update(id, event)
 	if err != nil {
 		log.Println("Error updating events: ", err)
