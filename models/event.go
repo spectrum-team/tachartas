@@ -18,7 +18,8 @@ import (
 // Image - URL that specifies where the image for the event was saved
 // Price - Defines if the event has a price
 type Event struct {
-	ID          primitive.ObjectID `bson:"_id" json:"id,omitempty"`
+	ID          primitive.ObjectID `bson:"_id" json:"-"`
+	ApiID       string             `json:"id,omitempty"`
 	Name        string             `bson:"name" json:"name,omitempty"`
 	Venue       string             `bson:"venue" json:"venue,omitempty"`
 	Date        time.Time          `bson:"date" json:"date,omitempty"`

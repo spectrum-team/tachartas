@@ -36,6 +36,7 @@ func (e *EventRepository) FindByID(id primitive.ObjectID) (*models.Event, error)
 		return nil, err
 	}
 
+	event.ApiID = event.ID.Hex()
 	return event, nil
 }
 
@@ -57,6 +58,7 @@ func (e *EventRepository) Find(query bson.M) ([]*models.Event, error) {
 			return nil, err
 		}
 
+		event.ApiID = event.ID.Hex()
 		events = append(events, event)
 	}
 
