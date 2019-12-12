@@ -92,6 +92,7 @@ func (e *EventHandler) Insert(w http.ResponseWriter, r *http.Request) {
 	event := &models.Event{}
 	err = json.Unmarshal(body, &event)
 	if err != nil {
+		log.Println("klok wawawa => ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
