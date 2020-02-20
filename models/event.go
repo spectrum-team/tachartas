@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -17,18 +18,21 @@ import (
 // Description - brief explanation of what the event is about
 // Image - URL that specifies where the image for the event was saved
 // Price - Defines if the event has a price
+// Assistants - Defines the amount of people that will attend the event
 type Event struct {
-	ID          primitive.ObjectID `bson:"_id" json:"-"`
-	ApiID       string             `json:"id,omitempty"`
-	Name        string             `bson:"name" json:"name,omitempty"`
-	Venue       string             `bson:"venue" json:"venue,omitempty"`
-	Date        time.Time          `bson:"date" json:"date,omitempty"`
-	StartTime   int32              `bson:"start_time" json:"start_time,omitempty"`
-	EndTime     int32              `bson:"end_time" json:"end_time,omitempty"`
-	Description string             `bson:"description" json:"description,omitempty"`
-	Image       *string            `bson:"image" json:"image,omitempty"`
-	Price       *float64           `bson:"price" json:"price,omitempty"`
-	Contact     EventContact       `bson:"contact" json:"contact,omitempty"`
+	ID          primitive.ObjectID  `bson:"_id" json:"-"`
+	ApiID       string              `json:"id,omitempty"`
+	Name        string              `bson:"name" json:"name,omitempty"`
+	Venue       string              `bson:"venue" json:"venue,omitempty"`
+	Date        time.Time           `bson:"date" json:"date,omitempty"`
+	StartTime   int32               `bson:"start_time" json:"start_time,omitempty"`
+	EndTime     int32               `bson:"end_time" json:"end_time,omitempty"`
+	Description string              `bson:"description" json:"description,omitempty"`
+	Image       *primitive.ObjectID `bson:"image" json:"image,omitempty"`
+	ImageContet *string             `json:"image_content"`
+	Price       *float64            `bson:"price" json:"price,omitempty"`
+	Contact     EventContact        `bson:"contact" json:"contact,omitempty"`
+	Assistants  int64               `bson:"assistants" json:"assistants,omitempty"`
 }
 
 // EventContact represents the contact information related to an event
@@ -42,4 +46,18 @@ type EventContact struct {
 	Phone       string                 `bson:"phone" json:"phone,omitempty"`
 	Email       string                 `json:"email" json:"email"`
 	SocialMedia map[string]interface{} `bson:"social_media" json:"social_media,omitempty"`
+}
+
+type EventImage struct {
+	ID         primitive.ObjectID `bson:"_id" json:"_id"`
+	Length     int64              `json:"length,omitempty"`
+	ChunkSize  int32              `json:"chunkSize,omitempty"`
+	UploadDate time.Time          `json:"uploadDate,omitempty"`
+	FileName   string             `json:"filename,omitempty"`
+}
+
+type EventQuery struct {
+	Query bson.M `json:"query"`
+	Limit *int64 `json:"limit,omitempty"`
+	Skip  *int64 `json:"skip,omitempty"`
 }

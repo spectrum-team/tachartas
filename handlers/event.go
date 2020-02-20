@@ -5,12 +5,12 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/spectrum-team/tachartas/interfaces"
 	"github.com/spectrum-team/tachartas/models"
 	"github.com/spectrum-team/tachartas/repos"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -62,7 +62,7 @@ func (e *EventHandler) Find(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := bson.M{}
+	query := models.EventQuery{}
 	err = json.Unmarshal(body, &query)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -141,6 +141,75 @@ func (e *EventHandler) Update(w http.ResponseWriter, r *http.Request) {
 	err = e.eventRepo.Update(id, event)
 	if err != nil {
 		log.Println("Error updating events: ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusAccepted)
+}
+
+func (e *EventHandler) Assist(w http.ResponseWriter, r *http.Request) {
+
+	idParam := mux.Vars(r)["id"]
+	if idParam == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	willAssist, err := strconv.Atoi(mux.Vars(r)["assist"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	id, err := primitive.ObjectIDFromHex(idParam)
+	if err != nil {
+		log.Println("There was an error parsing id: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = e.eventRepo.Assist(id, willAssist)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusAccepted)
+}
+
+func (e *EventHandler) AddImageToEvent(w http.ResponseWriter, r *http.Request) {
+
+	idParam := mux.Vars(r)["id"]
+	if idParam == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	file, handler, err := r.FormFile("filename")
+	if err != nil {
+		log.Println("There was an error reading file from multipart form: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Println("There was an error reading file into memory: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	id, err := primitive.ObjectIDFromHex(idParam)
+	if err != nil {
+		log.Println("There was an error parsing id: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = e.eventRepo.AddEventImage(id, handler.Filename, data)
+	if err != nil {
+		log.Println("there was an error saving image: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
