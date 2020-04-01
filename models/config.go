@@ -1,8 +1,10 @@
 package models
 
-import "go.mongodb.org/mongo-driver/mongo"
+import (
+	"context"
 
-import "context"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 type DatabaseConfig struct {
 	ConnectionString string

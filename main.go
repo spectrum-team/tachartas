@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"time"
+
 	gorillah "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/spectrum-team/tachartas/handlers"
 	"github.com/spectrum-team/tachartas/models"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"net/http"
-	"os"
-	"time"
 )
 
 func getMongoClient(conn string) (*mongo.Database, error) {
@@ -45,6 +46,7 @@ func main() {
 	}
 
 	e := handlers.NewEventHandler(config)
+	c := handlers.NewCategoryHandler(config)
 
 	router := mux.NewRouter()
 
@@ -54,6 +56,9 @@ func main() {
 	router.HandleFunc("/event/{id}", e.Update).Methods("PUT")
 	router.HandleFunc("/event/{id}/image", e.AddImageToEvent).Methods("PUT")
 	router.HandleFunc("/event/{id}/{assist}", e.Assist).Methods("PUT")
+
+	// Category
+	router.HandleFunc("/category", c.FindAll).Methods("GET")
 
 	port := os.Getenv("PORT")
 
