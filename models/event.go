@@ -33,6 +33,7 @@ type Event struct {
 	Price       *float64            `bson:"price" json:"price,omitempty"`
 	Contact     EventContact        `bson:"contact" json:"contact,omitempty"`
 	Assistants  int64               `bson:"assistants" json:"assistants,omitempty"`
+	Category    string              `bson:"category" json:"category,omitempty"`
 }
 
 // EventContact represents the contact information related to an event
