@@ -2,6 +2,7 @@ package repos
 
 import (
 	"bytes"
+	"encoding/base64"
 	"log"
 
 	"github.com/spectrum-team/tachartas/models"
@@ -204,7 +205,7 @@ func (e *EventRepository) addImageToEvent(event *models.Event) {
 			log.Println("There was an error downloading file: ", err.Error())
 		}
 
-		contentStr := string(fileBuffer.Bytes())
+		contentStr := base64.StdEncoding.EncodeToString(fileBuffer.Bytes())
 		event.ImageContet = &contentStr
 	}
 
