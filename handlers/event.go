@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -57,8 +58,11 @@ func (e *EventHandler) FindOne(w http.ResponseWriter, r *http.Request) {
 
 func (e *EventHandler) Find(w http.ResponseWriter, r *http.Request) {
 
+	fmt.Println("inception", r.Header)
+
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -66,6 +70,7 @@ func (e *EventHandler) Find(w http.ResponseWriter, r *http.Request) {
 	query := bson.M{}
 	err = json.Unmarshal(body, &query)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -76,6 +81,7 @@ func (e *EventHandler) Find(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	fmt.Println("keloke", w.Header())
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
