@@ -67,6 +67,9 @@ func main() {
 	}
 
 	listen := fmt.Sprintf(":%s", port)
+	// headersOk := gorillah.AllowedHeaders([]string{"X-Requested-With"})
+	originsOk := gorillah.AllowedOrigins([]string{"https://tarchartasweb.herokuapp.com"})
+	methodsOk := gorillah.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
-	http.ListenAndServe(listen, gorillah.CORS()(gorillah.CombinedLoggingHandler(os.Stdout, router)))
+	http.ListenAndServe(listen, gorillah.CORS(originsOk, methodsOk)(gorillah.CombinedLoggingHandler(os.Stdout, router)))
 }
