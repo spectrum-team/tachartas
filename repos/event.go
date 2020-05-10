@@ -10,7 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type EventRepository struct {
@@ -47,16 +46,16 @@ func (e *EventRepository) FindByID(id primitive.ObjectID) (*models.Event, error)
 	return event, nil
 }
 
-func (e *EventRepository) Find(query models.EventQuery) ([]*models.Event, error) {
+func (e *EventRepository) Find(query bson.M) ([]*models.Event, error) {
 
 	events := make([]*models.Event, 0)
 
-	opts := &options.FindOptions{
-		Limit: query.Limit,
-		Skip:  query.Skip,
-	}
+	// opts := &options.FindOptions{
+	// 	Limit: query.Limit,
+	// 	Skip:  query.Skip,
+	// }
 
-	cursor, err := e.Collection.Find(e.DbConfig.Ctx, query.Query, opts)
+	cursor, err := e.Collection.Find(e.DbConfig.Ctx, query)
 	if err != nil {
 		log.Println("There was an error: ", err)
 		return nil, err

@@ -11,6 +11,7 @@ import (
 	"github.com/spectrum-team/tachartas/interfaces"
 	"github.com/spectrum-team/tachartas/models"
 	"github.com/spectrum-team/tachartas/repos"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -62,7 +63,7 @@ func (e *EventHandler) Find(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := models.EventQuery{}
+	query := bson.M{}
 	err = json.Unmarshal(body, &query)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

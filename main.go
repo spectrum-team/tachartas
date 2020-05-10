@@ -68,5 +68,5 @@ func main() {
 
 	listen := fmt.Sprintf(":%s", port)
 
-	http.ListenAndServe(listen, gorillah.CombinedLoggingHandler(os.Stdout, router))
+	http.ListenAndServe(listen, gorillah.CORS()(gorillah.CombinedLoggingHandler(os.Stdout, router)))
 }
