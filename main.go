@@ -51,8 +51,8 @@ func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/event/{id}", e.FindOne).Methods("GET")
-	router.HandleFunc("/event/filter", e.Find).Methods("POST")
-	router.HandleFunc("/event", e.Insert).Methods("POST")
+	router.HandleFunc("/event/filter", e.Find).Methods("POST", "OPTIONS")
+	router.HandleFunc("/event", e.Insert).Methods("POST", "OPTIONS")
 	router.HandleFunc("/event/{id}", e.Update).Methods("PUT")
 	router.HandleFunc("/event/{id}/image", e.AddImageToEvent).Methods("PUT")
 	router.HandleFunc("/event/{id}/{assist}", e.Assist).Methods("PUT")
