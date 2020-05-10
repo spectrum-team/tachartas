@@ -71,5 +71,5 @@ func main() {
 	// originsOk := gorillah.AllowedOrigins([]string{"*"})
 	methodsOk := gorillah.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
-	http.ListenAndServe(listen, gorillah.CombinedLoggingHandler(os.Stdout, gorillah.CORS(headersOk, methodsOk)(router)))
+	http.ListenAndServe(listen, gorillah.CORS(headersOk, methodsOk)(router))
 }
