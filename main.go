@@ -67,7 +67,7 @@ func main() {
 	}
 
 	listen := fmt.Sprintf(":%s", port)
-	headersOk := gorillah.AllowedHeaders([]string{"Accept", "Accept-Language", "Content-Language", "Origin", "X-Requested-With"})
+	headersOk := gorillah.AllowedHeaders([]string{"Accept", "Accept-Language", "Content-Language", "Origin", "X-Requested-With", "User-Agent", "Referer", "Host"})
 	// originsOk := gorillah.AllowedOrigins([]string{"*"})
 	methodsOk := gorillah.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
