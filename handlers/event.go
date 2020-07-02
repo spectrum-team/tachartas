@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/spectrum-team/tachartas/commons"
 	"github.com/spectrum-team/tachartas/interfaces"
 	"github.com/spectrum-team/tachartas/models"
 	"github.com/spectrum-team/tachartas/repos"
@@ -19,12 +20,14 @@ import (
 type EventHandler struct {
 	dbConfig  *models.DatabaseConfig
 	eventRepo interfaces.EventRepository
+	userRepo  interfaces.UserRepository
 }
 
 func NewEventHandler(dbConfig *models.DatabaseConfig) *EventHandler {
 	return &EventHandler{
 		dbConfig:  dbConfig,
 		eventRepo: repos.NewEventRepository(dbConfig),
+		userRepo:  repos.NewUserRepository(dbConfig),
 	}
 }
 
@@ -177,6 +180,16 @@ func (e *EventHandler) Assist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = e.eventRepo.Assist(id, willAssist)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// Add it to the user too
+	event, _ := e.eventRepo.FindByID(id)
+
+	userEmail := commons.GetAuthCtx(r.Context())
+	err = e.userRepo.AssistToEvent(userEmail, event, willAssist)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

@@ -9,6 +9,7 @@ import (
 
 	gorillah "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/spectrum-team/tachartas/commons"
 	"github.com/spectrum-team/tachartas/handlers"
 	"github.com/spectrum-team/tachartas/models"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -47,18 +48,18 @@ func main() {
 
 	e := handlers.NewEventHandler(config)
 	c := handlers.NewCategoryHandler(config)
+	u := handlers.NewUserHandler(config)
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/event/{id}", e.FindOne).Methods("GET")
-	router.HandleFunc("/event/filter", e.Find).Methods("POST", "OPTIONS")
-	router.HandleFunc("/event", e.Insert).Methods("POST", "OPTIONS")
-	router.HandleFunc("/event/{id}", e.Update).Methods("PUT")
-	router.HandleFunc("/event/{id}/image", e.AddImageToEvent).Methods("PUT")
-	router.HandleFunc("/event/{id}/{assist}", e.Assist).Methods("PUT")
+	// Events
+	eventSubRouter(e, router)
 
 	// Category
 	router.HandleFunc("/category", c.FindAll).Methods("GET")
+
+	// Auth
+	router.HandleFunc("/signin", u.SignIn).Methods("POST")
 
 	port := os.Getenv("PORT")
 
@@ -72,4 +73,17 @@ func main() {
 	methodsOk := gorillah.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	http.ListenAndServe(listen, gorillah.CORS(headersOk, methodsOk)(router))
+}
+
+func eventSubRouter(eventHandler *handlers.EventHandler, router *mux.Router) {
+
+	eventRouter := router.PathPrefix("/event").Subrouter()
+	eventRouter.Use(commons.AuthMiddleware)
+
+	eventRouter.HandleFunc("/{id}", eventHandler.FindOne).Methods("GET")
+	eventRouter.HandleFunc("/filter", eventHandler.Find).Methods("POST", "OPTIONS")
+	eventRouter.HandleFunc("", eventHandler.Insert).Methods("POST", "OPTIONS")
+	eventRouter.HandleFunc("/{id}", eventHandler.Update).Methods("PUT")
+	eventRouter.HandleFunc("/{id}/image", eventHandler.AddImageToEvent).Methods("PUT")
+	eventRouter.HandleFunc("/{id}/{assist}", eventHandler.Assist).Methods("PUT")
 }
