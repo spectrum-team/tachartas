@@ -7,7 +7,7 @@ import (
 )
 
 type EventRepository interface {
-	FindByID(primitive.ObjectID) (*models.Event, error)
+	FindByID(string, primitive.ObjectID) (*models.Event, error)
 	Find(bson.M) ([]*models.Event, error)
 	Insert(*models.Event) (primitive.ObjectID, error)
 	Update(primitive.ObjectID, *models.Event) error

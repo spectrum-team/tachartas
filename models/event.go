@@ -19,6 +19,8 @@ import (
 // Image - URL that specifies where the image for the event was saved
 // Price - Defines if the event has a price
 // Assistants - Defines the amount of people that will attend the event
+// Category - Defines the category the event is part of
+// WillAssist - Used to tell if a user is assisting an event
 type Event struct {
 	ID          primitive.ObjectID  `bson:"_id" json:"-"`
 	ApiID       string              `json:"id,omitempty"`
@@ -34,6 +36,7 @@ type Event struct {
 	Contact     EventContact        `bson:"contact" json:"contact,omitempty"`
 	Assistants  int64               `bson:"assistants" json:"assistants,omitempty"`
 	Category    string              `bson:"category" json:"category,omitempty"`
+	WillAssist  bool                `json:"will_assist,omitempty"`
 }
 
 // EventContact represents the contact information related to an event

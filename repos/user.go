@@ -51,27 +51,28 @@ func (u *UserRepository) UpsertUser(user *models.User) error {
 	return nil
 }
 
-func (u *UserRepository) AssistToEvent(email string, event *models.Event, willAssist int) error {
+func (u *UserRepository) AssistToEvent(email string, event *models.Event, willAssist int) (bool, error) {
 
+	var resp bool
 	//Find the user
 	res := u.Collection.FindOne(u.DbConfig.Ctx, bson.M{"email": email})
 	if res.Err() != nil {
 		log.Println("Error looking user: ", res.Err())
-		return res.Err()
+		return false, res.Err()
 	}
 
 	user := &models.User{}
 	err := res.Decode(&user)
 	if err != nil {
 		log.Println("error decoding: ", err)
-		return err
+		return false, err
 	}
 
 	switch willAssist {
 	case 1:
 		indx := findIndex(user.UpcomingEvents, event.ID)
 		if indx > -1 {
-			return nil
+			return false, nil
 		}
 
 		e := &models.UpcomingEvents{
@@ -82,10 +83,12 @@ func (u *UserRepository) AssistToEvent(email string, event *models.Event, willAs
 		}
 
 		user.UpcomingEvents = append(user.UpcomingEvents, e)
+		resp = true
 	case 0:
 		indx := findIndex(user.UpcomingEvents, event.ID)
 		if indx > -1 {
 			user.UpcomingEvents = append(user.UpcomingEvents[:indx], user.UpcomingEvents[indx+1:]...)
+			resp = true
 		}
 	}
 
@@ -98,10 +101,10 @@ func (u *UserRepository) AssistToEvent(email string, event *models.Event, willAs
 	)
 	if err != nil {
 		log.Println("There was an error updating event: ", err)
-		return err
+		return false, err
 	}
 
-	return nil
+	return resp, nil
 }
 
 func findIndex(list []*models.UpcomingEvents, eventID primitive.ObjectID) int {

@@ -27,7 +27,7 @@ func NewEventRepository(dbConfig *models.DatabaseConfig) *EventRepository {
 	}
 }
 
-func (e *EventRepository) FindByID(id primitive.ObjectID) (*models.Event, error) {
+func (e *EventRepository) FindByID(userEmail string, id primitive.ObjectID) (*models.Event, error) {
 
 	res := e.Collection.FindOne(e.DbConfig.Ctx, bson.M{"_id": id})
 	if res.Err() != nil {
@@ -40,6 +40,24 @@ func (e *EventRepository) FindByID(id primitive.ObjectID) (*models.Event, error)
 	if err != nil {
 		log.Println("There was an error decoding: ", err)
 		return nil, err
+	}
+
+	// Check if user is assisting:
+	user := models.User{}
+	err = e.DbConfig.MongoClient.Collection("user").FindOne(
+		e.DbConfig.Ctx,
+		bson.M{
+			"email":                  userEmail,
+			"upcomingevents.eventid": id,
+		},
+	).Decode(&user)
+	if err != nil && err != mongo.ErrNoDocuments {
+		log.Println("Could not find a user with that email: ", err)
+		return nil, err
+	}
+
+	if user.Email != "" {
+		event.WillAssist = true
 	}
 
 	event.ApiID = event.ID.Hex()

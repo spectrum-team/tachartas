@@ -47,7 +47,9 @@ func (e *EventHandler) FindOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event, err := e.eventRepo.FindByID(id)
+	userEmail := commons.GetAuthCtx(r.Context())
+
+	event, err := e.eventRepo.FindByID(userEmail, id)
 	if err != nil {
 		log.Println("Error looking by ID: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -179,17 +181,22 @@ func (e *EventHandler) Assist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = e.eventRepo.Assist(id, willAssist)
+	// Add it to the user too
+	event, _ := e.eventRepo.FindByID(id)
+
+	userEmail := commons.GetAuthCtx(r.Context())
+	changed, err := e.userRepo.AssistToEvent(userEmail, event, willAssist)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	// Add it to the user too
-	event, _ := e.eventRepo.FindByID(id)
+	if !changed {
+		w.WriteHeader(http.StatusConflict)
+		return
+	}
 
-	userEmail := commons.GetAuthCtx(r.Context())
-	err = e.userRepo.AssistToEvent(userEmail, event, willAssist)
+	err = e.eventRepo.Assist(id, willAssist)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
