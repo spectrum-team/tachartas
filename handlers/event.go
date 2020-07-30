@@ -236,3 +236,17 @@ func (e *EventHandler) AddImageToEvent(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusAccepted)
 }
+
+func (e *EventHandler) FindHotEvents(w http.ResponseWriter, r *http.Request) {
+
+	events, err := e.eventRepo.FindHotEvents()
+	if err != nil {
+		log.Println("Error looking events: ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(&events)
+}

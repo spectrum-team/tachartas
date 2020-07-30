@@ -69,6 +69,11 @@ func (u *UserRepository) AssistToEvent(email string, event *models.Event, willAs
 
 	switch willAssist {
 	case 1:
+		indx := findIndex(user.UpcomingEvents, event.ID)
+		if indx > -1 {
+			return nil
+		}
+
 		e := &models.UpcomingEvents{
 			EventID:    event.ID,
 			EventName:  event.Name,

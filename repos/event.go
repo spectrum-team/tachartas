@@ -10,7 +10,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+var hotEventsLimit int64 = 5
 
 type EventRepository struct {
 	DbConfig   *models.DatabaseConfig
@@ -209,4 +212,39 @@ func (e *EventRepository) addImageToEvent(event *models.Event) {
 	}
 
 	return
+}
+
+func (e *EventRepository) FindHotEvents() ([]*models.Event, error) {
+
+	events := make([]*models.Event, 0)
+
+	opts := &options.FindOptions{
+		Limit: &hotEventsLimit,
+		Sort: bson.M{
+			"assistants": -1,
+		},
+	}
+
+	cursor, err := e.Collection.Find(e.DbConfig.Ctx, bson.M{}, opts)
+	if err != nil {
+		log.Println("There was an error: ", err)
+		return nil, err
+	}
+
+	for cursor.Next(e.DbConfig.Ctx) {
+		event := &models.Event{}
+		err = cursor.Decode(&event)
+		if err != nil {
+			log.Println("Error decoding event: ", err)
+			return nil, err
+		}
+
+		event.ApiID = event.ID.Hex()
+
+		e.addImageToEvent(event)
+
+		events = append(events, event)
+	}
+
+	return events, nil
 }
