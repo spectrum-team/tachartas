@@ -134,7 +134,7 @@ func (e *EventRepository) Update(id primitive.ObjectID, event *models.Event) err
 func (e *EventRepository) Assist(id primitive.ObjectID, willAssist int) error {
 
 	// First I will look for the existing event
-	event, err := e.FindByID(id)
+	event, err := e.FindByID("", id)
 	if err != nil {
 		log.Println("there was an error looking for existing event: ", err)
 		return err
@@ -161,7 +161,7 @@ func (e *EventRepository) Assist(id primitive.ObjectID, willAssist int) error {
 func (e *EventRepository) AddEventImage(id primitive.ObjectID, imgName string, img []byte) error {
 
 	// First I will look for the existing event
-	event, err := e.FindByID(id)
+	event, err := e.FindByID("", id)
 	if err != nil {
 		log.Println("there was an error looking for existing event: ", err)
 		return err

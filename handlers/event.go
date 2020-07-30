@@ -182,7 +182,7 @@ func (e *EventHandler) Assist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add it to the user too
-	event, _ := e.eventRepo.FindByID(id)
+	event, _ := e.eventRepo.FindByID("", id)
 
 	userEmail := commons.GetAuthCtx(r.Context())
 	changed, err := e.userRepo.AssistToEvent(userEmail, event, willAssist)
