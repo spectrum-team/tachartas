@@ -80,9 +80,9 @@ func eventSubRouter(eventHandler *handlers.EventHandler, router *mux.Router) {
 	eventRouter := router.PathPrefix("/event").Subrouter()
 	eventRouter.Use(commons.AuthMiddleware)
 
+	eventRouter.HandleFunc("/hot", eventHandler.FindHotEvents).Methods("GET")
 	eventRouter.HandleFunc("/{id}", eventHandler.FindOne).Methods("GET")
 	eventRouter.HandleFunc("/filter", eventHandler.Find).Methods("POST", "OPTIONS")
-	eventRouter.HandleFunc("/hot", eventHandler.FindHotEvents).Methods("GET")
 	eventRouter.HandleFunc("", eventHandler.Insert).Methods("POST", "OPTIONS")
 	eventRouter.HandleFunc("/{id}", eventHandler.Update).Methods("PUT")
 	eventRouter.HandleFunc("/{id}/image", eventHandler.AddImageToEvent).Methods("PUT")
