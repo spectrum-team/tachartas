@@ -2,6 +2,7 @@ package commons
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -57,6 +58,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
+			fmt.Println("Bad Token: ", err.Error())
 			log.Println("Expired Token!")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
