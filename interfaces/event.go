@@ -14,4 +14,5 @@ type EventRepository interface {
 	Assist(id primitive.ObjectID, willAssist int) error
 	AddEventImage(id primitive.ObjectID, imgName string, img []byte) error
 	FindHotEvents() ([]*models.Event, error)
+	FindEventImage(primitive.ObjectID) (string, error)
 }

@@ -22,21 +22,21 @@ import (
 // Category - Defines the category the event is part of
 // WillAssist - Used to tell if a user is assisting an event
 type Event struct {
-	ID          primitive.ObjectID  `bson:"_id" json:"-"`
-	ApiID       string              `json:"id,omitempty"`
-	Name        string              `bson:"name" json:"name,omitempty"`
-	Venue       string              `bson:"venue" json:"venue,omitempty"`
-	Date        time.Time           `bson:"date" json:"date,omitempty"`
-	StartTime   int32               `bson:"start_time" json:"start_time,omitempty"`
-	EndTime     int32               `bson:"end_time" json:"end_time,omitempty"`
-	Description string              `bson:"description" json:"description,omitempty"`
-	Image       *primitive.ObjectID `bson:"image" json:"image,omitempty"`
-	ImageContet *string             `json:"image_content"`
-	Price       *float64            `bson:"price" json:"price,omitempty"`
-	Contact     EventContact        `bson:"contact" json:"contact,omitempty"`
-	Assistants  int64               `bson:"assistants" json:"assistants,omitempty"`
-	Category    string              `bson:"category" json:"category,omitempty"`
-	WillAssist  bool                `json:"will_assist,omitempty"`
+	ID           primitive.ObjectID  `bson:"_id" json:"-"`
+	ApiID        string              `json:"id,omitempty"`
+	Name         string              `bson:"name" json:"name,omitempty"`
+	Venue        string              `bson:"venue" json:"venue,omitempty"`
+	Date         time.Time           `bson:"date" json:"date,omitempty"`
+	StartTime    int32               `bson:"start_time" json:"start_time,omitempty"`
+	EndTime      int32               `bson:"end_time" json:"end_time,omitempty"`
+	Description  string              `bson:"description" json:"description,omitempty"`
+	Image        *primitive.ObjectID `bson:"image" json:"image,omitempty"`
+	ImageContent *string             `json:"image_content" bson:"-"`
+	Price        *float64            `bson:"price" json:"price,omitempty"`
+	Contact      EventContact        `bson:"contact" json:"contact,omitempty"`
+	Assistants   int64               `bson:"assistants" json:"assistants,omitempty"`
+	Category     string              `bson:"category" json:"category,omitempty"`
+	WillAssist   bool                `json:"will_assist,omitempty"`
 }
 
 // EventContact represents the contact information related to an event

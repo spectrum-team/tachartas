@@ -62,8 +62,6 @@ func (e *EventRepository) FindByID(userEmail string, id primitive.ObjectID) (*mo
 
 	event.ApiID = event.ID.Hex()
 
-	e.addImageToEvent(event)
-
 	return event, nil
 }
 
@@ -91,8 +89,6 @@ func (e *EventRepository) Find(query bson.M) ([]*models.Event, error) {
 		}
 
 		event.ApiID = event.ID.Hex()
-
-		e.addImageToEvent(event)
 
 		events = append(events, event)
 	}
@@ -211,26 +207,26 @@ func (e *EventRepository) AddEventImage(id primitive.ObjectID, imgName string, i
 	return nil
 }
 
-func (e *EventRepository) addImageToEvent(event *models.Event) {
-	if event.Image != nil {
+// func (e *EventRepository) addImageToEvent(event *models.Event) {
+// 	if event.Image != nil {
 
-		bucket, err := gridfs.NewBucket(e.DbConfig.MongoClient, nil)
-		if err != nil {
-			log.Println(err)
-			// return err
-		}
+// 		bucket, err := gridfs.NewBucket(e.DbConfig.MongoClient, nil)
+// 		if err != nil {
+// 			log.Println(err)
+// 			// return err
+// 		}
 
-		fileBuffer := bytes.NewBuffer(nil)
-		if _, err := bucket.DownloadToStream(event.Image, fileBuffer); err != nil {
-			log.Println("There was an error downloading file: ", err.Error())
-		}
+// 		fileBuffer := bytes.NewBuffer(nil)
+// 		if _, err := bucket.DownloadToStream(event.Image, fileBuffer); err != nil {
+// 			log.Println("There was an error downloading file: ", err.Error())
+// 		}
 
-		contentStr := base64.StdEncoding.EncodeToString(fileBuffer.Bytes())
-		event.ImageContet = &contentStr
-	}
+// 		contentStr := base64.StdEncoding.EncodeToString(fileBuffer.Bytes())
+// 		event.ImageContet = &contentStr
+// 	}
 
-	return
-}
+// 	return
+// }
 
 func (e *EventRepository) FindHotEvents() ([]*models.Event, error) {
 
@@ -259,10 +255,27 @@ func (e *EventRepository) FindHotEvents() ([]*models.Event, error) {
 
 		event.ApiID = event.ID.Hex()
 
-		e.addImageToEvent(event)
-
 		events = append(events, event)
 	}
 
 	return events, nil
+}
+
+func (e *EventRepository) FindEventImage(imageID primitive.ObjectID) (string, error) {
+
+	bucket, err := gridfs.NewBucket(e.DbConfig.MongoClient, nil)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	fileBuffer := bytes.NewBuffer(nil)
+	if _, err := bucket.DownloadToStream(imageID, fileBuffer); err != nil {
+		log.Println("There was an error downloading file: ", err.Error())
+		return "", err
+	}
+
+	contentStr := base64.StdEncoding.EncodeToString(fileBuffer.Bytes())
+
+	return contentStr, nil
 }

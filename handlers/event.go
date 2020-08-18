@@ -257,3 +257,31 @@ func (e *EventHandler) FindHotEvents(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(&events)
 }
+
+func (e *EventHandler) FindEventImage(w http.ResponseWriter, r *http.Request) {
+
+	idParam := mux.Vars(r)["id"]
+
+	if idParam == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	id, err := primitive.ObjectIDFromHex(idParam)
+	if err != nil {
+		log.Println("There was an error parsing id: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	event, err := e.eventRepo.FindEventImage(id)
+	if err != nil {
+		log.Println("Error looking by ID: ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(&event)
+}
