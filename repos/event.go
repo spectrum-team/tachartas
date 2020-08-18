@@ -261,21 +261,21 @@ func (e *EventRepository) FindHotEvents() ([]*models.Event, error) {
 	return events, nil
 }
 
-func (e *EventRepository) FindEventImage(imageID primitive.ObjectID) (string, error) {
+func (e *EventRepository) FindEventImage(imageID primitive.ObjectID) (*models.ImageContent, error) {
 
 	bucket, err := gridfs.NewBucket(e.DbConfig.MongoClient, nil)
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return nil, err
 	}
 
 	fileBuffer := bytes.NewBuffer(nil)
 	if _, err := bucket.DownloadToStream(imageID, fileBuffer); err != nil {
 		log.Println("There was an error downloading file: ", err.Error())
-		return "", err
+		return nil, err
 	}
 
 	contentStr := base64.StdEncoding.EncodeToString(fileBuffer.Bytes())
 
-	return contentStr, nil
+	return &models.ImageContent{Content: contentStr}, nil
 }

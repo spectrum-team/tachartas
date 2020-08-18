@@ -65,3 +65,7 @@ type EventQuery struct {
 	Limit *int64 `json:"limit,omitempty"`
 	Skip  *int64 `json:"skip,omitempty"`
 }
+
+type ImageContent struct {
+	Content string `json:"image_content"`
+}
