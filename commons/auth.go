@@ -58,7 +58,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			}
 
 			log.Println("Expired Token!")
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
